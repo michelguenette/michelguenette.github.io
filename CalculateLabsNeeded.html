@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Calculator for Factorio Labs and Biolabs</title>
+<meta charset="UTF-8">
+<meta name="description" content="Allows the user to determine the number of labs needed based on a rate of science packs consumed based on the current research speed and productivity available through entities, modules, and technologies.">
+<meta name="keywords" content="Factorio, Space Age, vanilla, lab, biolab, beacon, module, speed, productivity, quality, research, calculator">
+<meta name="author" content="Michel Guenette">
+</head>
+
+<body>
+
+<style>
+.selectors {
+	width: 600px;
+	//border: 3px solid red;
+}
+
+.images {
+	width: 550px;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	//border: 3px solid blue;
+}
+
+.formula {
+	position: relative;
+}
+
+img.icons {
+	height: 64px;
+	width: 64px;
+	float: right;
+}
+
+</style>
+
+<div style="height:650px">
+<div class="selectors">
+<!--All of the form inputs and selectors are grouped together in to separate fieldsets. -->
+<fieldset>
+	<legend>Type of Lab and Quality</legend>
+	<img class="icons" id="qualityOfLabsImage" src="Images/quality-normal.png" />
+	<img class="icons" id="labTypeImage" src="Images/research-speed.png" />
+
+	<label for="labType">Type of lab:</label>
+	<select id="labType" name="labType">
+		<option value="1">Lab</option>
+		<option value="2">Biolab</option>
+	</select>
+
+	<br/>
+	<label for="qualityOfLabs">Quality:</label>
+	<select id="qualityOfLabs" name="qualityOfLabs">
+		<option value="1">Normal</option>
+		<option value="1.3">Uncommon</option>
+		<option value="1.6">Rare</option>
+		<option value="1.9">Epic</option>
+		<option value="2.5">Legendary</option>
+	</select>
+
+</fieldset>
+
+<fieldset>
+	<legend>Tech-related Bonuses</legend>
+	<img class="icons" id="researchProductivityImage" src="Images/research-productivity.png" />
+	<img class="icons" id="researchSpeedImage" src="Images/research-speed_techIcon.png" />
+	
+	<label for="techLevelResearchSpeed">Research speed:</label>
+	<select id="techLevelResearchSpeed" name="techLevelResearchSpeed">
+		<option value="0">No tech research completed</option>
+		<option value="0.2">Research Speed 1</option>
+		<option value="0.5">Research Speed 2</option>
+		<option value="0.9">Research Speed 3</option>
+		<option value="1.4">Research Speed 4</option>
+		<option value="1.9">Research Speed 5</option>
+		<option value="2.5">Research Speed 6</option>
+	</select>
+
+	<br/>
+	<label for="techLevelResearchProductivity">Research productivity:</label>
+	<input type="number" id="techLevelResearchProductivity" name="techLevelResearchProductivity" min="0" placeholder="0">
+
+</fieldset>
+
+<fieldset>
+	<legend>Productivity Modules for the Type of Lab</legend>
+	<img class="icons" id="qualityOfProductivityModulesImage" src="Images/quality-normal.png" />
+	<img class="icons" id="productivityModuleImage" src="Images/empty-module-slot.png" />
+	<img class="icons" id="productivityModuleImage2" hidden />
+	<img class="icons" id="productivityModuleImage3" hidden />
+	<img class="icons" id="productivityModuleImage4" hidden />
+	
+	<label for="numberOfProductivityModules">Number to insert:</label>
+		<input type="number" id="numberOfProductivityModules" name="numberOfProductivityModules" min="0" placeholder="0" max="2">
+
+
+	<br/>
+	<label for="tierOfProductivityModules">Tier:</label>
+	<select id="tierOfProductivityModules" name="tierOfProductivityModules">
+		<option value="0">No productivity modules</option>
+		<option value="0.04">Tier 1</option>
+		<option value="0.06">Tier 2</option>
+		<option value="0.1">Tier 3</option>	
+	</select>
+
+
+	<br/>
+	<label for="qualityOfProductivityModules">Quality:</label>
+	<select id="qualityOfProductivityModules" name="qualityOfProductivityModules">
+		<option value="1">Normal</option>
+		<option value="1.3">Uncommon</option>
+		<option value="1.6">Rare</option>
+		<option value="1.9">Epic</option>
+		<option value="2.5">Legendary</option>
+	</select>
+
+</fieldset>
+
+<fieldset>
+	<legend>Number of Beacons and Quality</legend>
+	<img class="icons" id="qualityOfBeaconsImage" src="Images/quality-normal.png" />
+	<img class="icons" id="beaconImage" src="Images/beacon.png" />
+	
+	<label for="numberOfBeacons">Number to place around:</label>
+		<input type="number" id="numberOfBeacons" name="numberOfBeacons" min="0" placeholder="0" max="12">
+
+	<br/>
+	<label for="qualityOfBeacons">Quality:</label>
+	<select id="qualityOfBeacons" name="qualityOfBeacons">
+		<option value="1.5">Normal</option>
+		<option value="1.7">Uncommon</option>
+		<option value="1.9">Rare</option>
+		<option value="2.1">Epic</option>
+		<option value="2.5">Legendary</option>
+	</select>	
+
+</fieldset>
+
+<fieldset>
+	<legend>Speed Modules for the Beacon</legend>
+	<img class="icons" id="qualityOfSpeedModulesImage" src="Images/quality-normal.png" />
+	<img class="icons" id="speedModuleImage" src="Images/empty-module-slot.png" />
+	<img class="icons" id="speedModuleImage2" hidden />
+	
+	<label for="numberOfSpeedModules">Number to insert:</label>
+		<input type="number" id="numberOfSpeedModules" name="numberOfSpeedModules" min="0" placeholder="0" max="2">
+
+	<br/>
+	<label for="tierOfSpeedModules">Tier:</label>
+	<select id="tierOfSpeedModules" name="tierOfSpeedModules">
+		<option value="0">No speed modules</option>
+		<option value="0.2">Tier 1</option>
+		<option value="0.3">Tier 2</option>
+		<option value="0.5">Tier 3</option>
+	</select>
+
+	<br/>
+	<label for="qualityOfSpeedModules">Quality:</label>
+	<select id="qualityOfSpeedModules" name="qualityOfSpeedModules">
+		<option value="1">Normal</option>
+		<option value="1.3">Uncommon</option>
+		<option value="1.6">Rare</option>
+		<option value="1.9">Epic</option>
+		<option value="2.5">Legendary</option>
+	</select>
+
+</fieldset>
+
+<fieldset>
+	<legend>Preset Values</legend>
+	<button type="button" onclick="formReset()">Reset</button><br/>
+	<button type="button" onclick="formVanillaLab()">Maxed out Vanilla lab</button><br/>
+	<button type="button" onclick="formVanillaLabQuality()">Maxed out Vanilla lab including Space Age quality</button><br/>
+	<button type="button" onclick="formSpaceAgeBiolab()">Maxed out Space Age biolab</button><br/>
+	<button type="button" onclick="formSpaceAgeBiolabQuality()">Maxed out Space Age biolab including Space Age quality</button>
+
+</fieldset>
+
+</div>
+
+<div class="images">
+<!--A container for the large image of the possible layout of beacons around either the lab or the biolab. -->
+<img id="images" src="Images/Lab_Beacons_00.png">
+</div>
+
+</div>
+<!--Formula for calculating the number of labs needed to reach a player determined rate of consumption.
+Inspired by the layout presented on Factorio Cheat Sheet. -->
+<div class="formula">
+
+<table>
+	<tr>
+		<td><p id="labsNeeded">Labs needed: 60</p></td>
+		<td>=</td>
+		<td style="border-bottom: 1px solid black;">
+			<label for="packsPerMinute">Packs per minute:</label>
+				<input type="number" id="packsPerMinute" name="packsPerMinute" min="0" value="60">
+		</td>
+		<td>*</td>
+		<td style="border-bottom: 1px solid black;">
+			<label for="researchCycleSeconds">Research cycle seconds:</label>
+				<input type="number" id="researchCycleSeconds" name="researchCycleSeconds" min="0" value="60">
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+		<td>
+			<label for="seconds">Seconds:</label>
+				<input type="number" id="seconds" name="seconds" min="1" value="60">
+		</td>
+		<td></td>
+		<td>
+			<p>
+				<span id="researchSpeed">Lab speed: 1.00</span>
+				 * 
+				<span id="researchProductivity">(1 + Lab productivity: 0.00 == 0%)</span>
+			</p>
+		</td>
+	</tr>
+</table>
+
+</div>
+
+<script> //Variables and functions for the inputs and the selectors to change images.
+// Changes the images of the entities
+let imagesRoot = "Images/";
+
+// Name of images of the lab and beacons
+let imagesLabs = "Lab_Beacons_";
+
+// Name of the images of the biolab and beacons
+let imagesBiolabs = "Biolab_Beacons_";
+
+// Image file type extension
+let imageTypePng = ".png";
+
+
+//Event listeners added to all of the form inputs and selectors.
+document.getElementById("labType").addEventListener("change", changeBeaconImage);
+document.getElementById("labType").addEventListener("change", changeLabTypeImage);
+document.getElementById("qualityOfLabs").addEventListener("change", changeLabQualityImage);
+
+document.getElementById("numberOfProductivityModules").addEventListener("input", changeProductivityModuleImage);
+document.getElementById("tierOfProductivityModules").addEventListener("change", changeProductivityModuleImage);
+document.getElementById("qualityOfProductivityModules").addEventListener("change", changeProductivityModuleQualityImage);
+
+document.getElementById("numberOfBeacons").addEventListener("input", changeBeaconImage);
+document.getElementById("qualityOfBeacons").addEventListener("change", changeBeaconQualityImage);
+
+document.getElementById("numberOfSpeedModules").addEventListener("input", changeSpeedModuleImage);
+document.getElementById("tierOfSpeedModules").addEventListener("change", changeSpeedModuleImage);
+document.getElementById("qualityOfSpeedModules").addEventListener("change", changeSpeedModuleQualityImage);
+
+
+
+
+function changeBeaconImage() 
+//Changes the image of the suggested possible layout of beacons around either the lab or the biolab.
+{
+	let imageValue = (document.getElementById("numberOfBeacons").value).padStart(2,"0");
+	let labTypeSelected;
+	if (document.getElementById("labType").value == 1) {
+		labTypeSelected = imagesLabs;
+		if (document.getElementById("numberOfBeacons").value > 12) {
+			imageValue = 12;
+		}
+	} else {
+		labTypeSelected = imagesBiolabs;
+	}
+	
+	let imageName = imagesRoot + labTypeSelected + imageValue + imageTypePng;
+	document.getElementById("images").setAttribute("src", imageName); 
+}
+
+function changeLabTypeImage()
+//Changes the image of the type of lab selected.
+{
+	let changeLabType;
+	if (document.getElementById("labType").value == 1) {
+		changeLabType = "research-speed.png";
+	} else {
+		changeLabType = "biolab.png";
+	};
+	document.getElementById("labTypeImage").setAttribute("src", imagesRoot + changeLabType);
+}
+
+function changeLabQualityImage()
+//Changes the image of the level of quality selected for the lab and the biolab.
+{
+	let changeLabQuality;
+	let labQuality = document.getElementById("qualityOfLabs").value
+	if (labQuality == 1) {
+		changeLabQuality = "quality-normal.png";
+	} else if (labQuality == 1.3) {
+		changeLabQuality = "quality-uncommon.png";
+	} else if (labQuality == 1.6) {
+		changeLabQuality = "quality-rare.png";
+	} else if (labQuality == 1.9) {
+		changeLabQuality = "quality-epic.png";
+	} else {
+		changeLabQuality = "quality-legendary.png";
+	};
+	document.getElementById("qualityOfLabsImage").setAttribute("src", imagesRoot + changeLabQuality);
+}
+
+function numberOfProductivityModulesImage(currentModuleImage)
+//Changes the number of productivity modules to display (or insert into) the lab and the biolab.
+{
+	let numberOfProductivityModulesValue = document.getElementById("numberOfProductivityModules").value;
+	
+	if (numberOfProductivityModulesValue == 0) {
+		document.getElementById("productivityModuleImage").setAttribute("src", imagesRoot + "empty-module-slot.png");
+		document.getElementById("productivityModuleImage2").setAttribute("hidden", "");
+		document.getElementById("productivityModuleImage3").setAttribute("hidden", "");
+		document.getElementById("productivityModuleImage4").setAttribute("hidden", "");
+		
+	} else if (numberOfProductivityModulesValue == 1) {
+		document.getElementById("productivityModuleImage").setAttribute("src", currentModuleImage);
+		document.getElementById("productivityModuleImage2").setAttribute("hidden", "");
+		document.getElementById("productivityModuleImage3").setAttribute("hidden", "");
+		document.getElementById("productivityModuleImage4").setAttribute("hidden", "");
+		
+	} else if (numberOfProductivityModulesValue == 2) {
+		document.getElementById("productivityModuleImage").setAttribute("src", currentModuleImage);
+		document.getElementById("productivityModuleImage2").setAttribute("src", currentModuleImage);
+		document.getElementById("productivityModuleImage2").removeAttribute("hidden");
+		document.getElementById("productivityModuleImage3").setAttribute("hidden", "");
+		document.getElementById("productivityModuleImage4").setAttribute("hidden", "");
+	
+	} else if (numberOfProductivityModulesValue == 3) {
+		document.getElementById("productivityModuleImage").setAttribute("src", currentModuleImage);
+		document.getElementById("productivityModuleImage2").setAttribute("src", currentModuleImage);
+		document.getElementById("productivityModuleImage3").setAttribute("src", currentModuleImage);
+		document.getElementById("productivityModuleImage3").removeAttribute("hidden");
+		document.getElementById("productivityModuleImage4").setAttribute("hidden", "");
+	} else if (numberOfProductivityModulesValue == 4) {
+		document.getElementById("productivityModuleImage").setAttribute("src", currentModuleImage);
+		document.getElementById("productivityModuleImage2").setAttribute("src", currentModuleImage);
+		document.getElementById("productivityModuleImage3").setAttribute("src", currentModuleImage);
+		document.getElementById("productivityModuleImage4").setAttribute("src", currentModuleImage);
+		document.getElementById("productivityModuleImage4").removeAttribute("hidden");
+	};
+}
+
+function changeProductivityModuleImage()
+//Changes the image of the tier level of the productivity module selected.
+{
+	let changeProductivityModule;
+	let productivityModule = document.getElementById("tierOfProductivityModules").value
+	if (productivityModule == 0) {
+		changeProductivityModule = "empty-module-slot.png";
+	} else if (productivityModule == 0.04) {
+		changeProductivityModule = "productivity-module.png";
+	} else if (productivityModule == 0.06) {
+		changeProductivityModule = "productivity-module-2.png";
+	} else {
+		changeProductivityModule = "productivity-module-3.png";
+	};
+	document.getElementById("productivityModuleImage").setAttribute("src", imagesRoot + changeProductivityModule);
+	numberOfProductivityModulesImage(imagesRoot + changeProductivityModule);
+}
+
+function changeProductivityModuleQualityImage()
+//Changes the image of the level of quality selected for the productivity module.
+{
+	let changeProductivityModuleQuality;
+	let productivityModuleQuality = document.getElementById("qualityOfProductivityModules").value
+	if (productivityModuleQuality == 1) {
+		changeProductivityModuleQuality = "quality-normal.png";
+	} else if (productivityModuleQuality == 1.3) {
+		changeProductivityModuleQuality = "quality-uncommon.png";
+	} else if (productivityModuleQuality == 1.6) {
+		changeProductivityModuleQuality = "quality-rare.png";
+	} else if (productivityModuleQuality == 1.9) {
+		changeProductivityModuleQuality = "quality-epic.png";
+	} else {
+		changeProductivityModuleQuality = "quality-legendary.png";
+	};
+	document.getElementById("qualityOfProductivityModulesImage").setAttribute("src", imagesRoot + changeProductivityModuleQuality);
+}
+
+
+function changeBeaconQualityImage()
+//Changes the image of the level of quality selected for the beacon.
+{
+	let changeBeaconQuality;
+	let beaconQuality = document.getElementById("qualityOfBeacons").value
+	if (beaconQuality == 1.5) {
+		changeBeaconQuality = "quality-normal.png";
+	} else if (beaconQuality == 1.7) {
+		changeBeaconQuality = "quality-uncommon.png";
+	} else if (beaconQuality == 1.9) {
+		changeBeaconQuality = "quality-rare.png";
+	} else if (beaconQuality == 2.1) {
+		changeBeaconQuality = "quality-epic.png";
+	} else {
+		changeBeaconQuality = "quality-legendary.png";
+	};
+	document.getElementById("qualityOfBeaconsImage").setAttribute("src", imagesRoot + changeBeaconQuality);
+}
+
+function numberOfSpeedModulesImage(currentModuleImage)
+//Changes the number of speed modules to display (or insert into) the beacon.
+{
+	let numberOfSpeedModulesValue = document.getElementById("numberOfSpeedModules").value;
+	
+	if (numberOfSpeedModulesValue == 0) {
+		document.getElementById("speedModuleImage").setAttribute("src", imagesRoot + "empty-module-slot.png");
+		document.getElementById("speedModuleImage2").setAttribute("hidden", "");
+		
+	} else if (numberOfSpeedModulesValue == 1) {
+		document.getElementById("speedModuleImage").setAttribute("src", currentModuleImage);
+		document.getElementById("speedModuleImage2").setAttribute("hidden", "");
+		
+	} else if (numberOfSpeedModulesValue == 2) {
+		document.getElementById("speedModuleImage").setAttribute("src", currentModuleImage);
+		document.getElementById("speedModuleImage2").setAttribute("src", currentModuleImage);
+		document.getElementById("speedModuleImage2").removeAttribute("hidden");
+	
+	};
+
+}
+
+function changeSpeedModuleImage()
+//Changes the image of the tier level of the speed module selected.
+{
+	let changeSpeedModule;
+	let speedModule = document.getElementById("tierOfSpeedModules").value
+	if (speedModule == 0) {
+		changeSpeedModule = "empty-module-slot.png";
+	} else if (speedModule == 0.2) {
+		changeSpeedModule = "speed-module.png";
+	} else if (speedModule == 0.3) {
+		changeSpeedModule = "speed-module-2.png";
+	} else {
+		changeSpeedModule = "speed-module-3.png";
+	};
+	document.getElementById("speedModuleImage").setAttribute("src", imagesRoot + changeSpeedModule);
+	numberOfSpeedModulesImage(imagesRoot + changeSpeedModule);
+}
+
+function changeSpeedModuleQualityImage()
+//Changes the image of the level of quality selected for the speed module.
+{
+	let changeSpeedModuleQuality;
+	let speedModuleQuality = document.getElementById("qualityOfSpeedModules").value
+	if (speedModuleQuality == 1) {
+		changeSpeedModuleQuality = "quality-normal.png";
+	} else if (speedModuleQuality == 1.3) {
+		changeSpeedModuleQuality = "quality-uncommon.png";
+	} else if (speedModuleQuality == 1.6) {
+		changeSpeedModuleQuality = "quality-rare.png";
+	} else if (speedModuleQuality == 1.9) {
+		changeSpeedModuleQuality = "quality-epic.png";
+	} else {
+		changeSpeedModuleQuality = "quality-legendary.png";
+	};
+	document.getElementById("qualityOfSpeedModulesImage").setAttribute("src", imagesRoot + changeSpeedModuleQuality);
+}
+
+</script>
+
+<script> //Variables and functions for the inputs and the selectors to calculate values.
+// Constants for the speed penalty of productivity modules
+const productivityTier0SpeedPenalty = 0;
+const productivityTier1SpeedPenalty = -0.05;
+const productivityTier2SpeedPenalty = -0.1;
+const productivityTier3SpeedPenalty = -0.15;
+
+// Global variables
+let totalLabSpeed;
+let totalLabProductivity;
+
+// Event listener for the type of labs
+document.getElementById("labType").addEventListener("change", function() {
+	if (this.value == "1") {
+		changeMaxValues(2, 12);
+	} else {
+		changeMaxValues(4, 16);
+	}
+	researchSpeedValue();
+	changeProductivityModuleImage();
+});
+
+// Event listeners for all the form fields
+document.getElementById("qualityOfLabs").addEventListener("change", researchSpeedValue);
+
+document.getElementById("techLevelResearchSpeed").addEventListener("change", researchSpeedValue);
+document.getElementById("techLevelResearchProductivity").addEventListener("input", researchSpeedValue);
+
+document.getElementById("numberOfProductivityModules").addEventListener("input", researchSpeedValue);
+document.getElementById("tierOfProductivityModules").addEventListener("change", researchSpeedValue);
+document.getElementById("qualityOfProductivityModules").addEventListener("change", researchSpeedValue);
+
+document.getElementById("numberOfBeacons").addEventListener("input", researchSpeedValue);
+document.getElementById("qualityOfBeacons").addEventListener("change", researchSpeedValue);
+
+document.getElementById("numberOfSpeedModules").addEventListener("change", researchSpeedValue);
+document.getElementById("tierOfSpeedModules").addEventListener("change", researchSpeedValue);
+document.getElementById("qualityOfSpeedModules").addEventListener("change", researchSpeedValue);
+
+document.getElementById("researchCycleSeconds").addEventListener("input", calculateLabsNeeded);
+document.getElementById("packsPerMinute").addEventListener("input", calculateLabsNeeded);
+document.getElementById("seconds").addEventListener("input", calculateLabsNeeded);
+
+
+function changeMaxValues(changeMaxValueOfProductivityModules, changeMaxValueOfBeacons)
+//Changes the maximum values for productivity modules and beacons based on the type of lab selected.
+{
+	//Change the max value of productivity modules
+	document.getElementById("numberOfProductivityModules").max = changeMaxValueOfProductivityModules;
+	if (document.getElementById("numberOfProductivityModules").value > 2) {
+		document.getElementById("numberOfProductivityModules").value = changeMaxValueOfProductivityModules;
+		}
+	
+	//Change the max value of beacons
+	document.getElementById("numberOfBeacons").max = changeMaxValueOfBeacons;
+	if (document.getElementById("numberOfBeacons").value > 12) {
+		document.getElementById("numberOfBeacons").value = changeMaxValueOfBeacons;
+		}
+}
+
+function researchSpeedValue() 
+//Calculates the research speed based on the user's selections.
+{
+// Variables related to the labs
+let labTypeValue = parseInt(document.getElementById("labType").value);
+let qualityOfLabsValue = parseFloat(document.getElementById("qualityOfLabs").value);
+
+// Variables related to the technologies
+let techResearchSpeedValue = parseFloat(document.getElementById("techLevelResearchSpeed").value);
+let techLevelResearchProductivityValue = parseInt(document.getElementById("techLevelResearchProductivity").value);
+	techLevelResearchProductivityValue = techLevelResearchProductivityValue || 0;
+
+// Variables related to productivity modules inserted in the labs
+let numberOfProductivityModulesValue = parseInt(document.getElementById("numberOfProductivityModules").value);
+	numberOfProductivityModulesValue = numberOfProductivityModulesValue || 0;
+let tierOfProductivityModulesValue = parseFloat(document.getElementById("tierOfProductivityModules").value);
+let qualityOfProductivityModulesValue = parseFloat(document.getElementById("qualityOfProductivityModules").value);
+
+// Variables related to the beacons
+let numberOfBeaconsValue = parseInt(document.getElementById("numberOfBeacons").value);
+	numberOfBeaconsValue = numberOfBeaconsValue || 0;
+let qualityOfBeaconsValue = parseFloat(document.getElementById("qualityOfBeacons").value);
+
+// Variables related to the speed modules inserted in the beacons
+let numberOfSpeedModulesValue = parseInt(document.getElementById("numberOfSpeedModules").value);
+	numberOfSpeedModulesValue = numberOfSpeedModulesValue || 0;
+let tierOfSpeedModulesValue = parseFloat(document.getElementById("tierOfSpeedModules").value);
+let qualityOfSpeedModulesValue = parseFloat(document.getElementById("qualityOfSpeedModules").value);
+
+// Variable related to the speed penalty incurrec by the productivity modules
+let speedPenaltyValue;
+	if (tierOfProductivityModulesValue == 0) {
+		speedPenaltyValue = productivityTier0SpeedPenalty;
+		} else if (tierOfProductivityModulesValue == 0.04) {
+		speedPenaltyValue = productivityTier1SpeedPenalty;
+		} else if (tierOfProductivityModulesValue == 0.06) {
+		speedPenaltyValue = productivityTier2SpeedPenalty;
+		} else {
+		speedPenaltyValue = productivityTier3SpeedPenalty;
+		}
+
+// Variable for the combined contribution of beacons and speed modules
+let beaconSpeedValue;
+	beaconSpeedValue = numberOfSpeedModulesValue * tierOfSpeedModulesValue * qualityOfSpeedModulesValue * qualityOfBeaconsValue * numberOfBeaconsValue / divideByZeroCheck(numberOfBeaconsValue);
+	
+function divideByZeroCheck(beacons) 
+//Checks for a divide by zero error and returns one
+{
+	if (beacons == 0) {
+		return 1;
+		} else {
+		return Math.sqrt(beacons);
+		};
+}
+
+// Variable for the combined contribution of productivity modules
+let totalSpeedPenalty;
+	totalSpeedPenalty = (numberOfProductivityModulesValue * speedPenaltyValue).toFixed(2);
+
+// Calculates the total lab speed from all sources
+	totalLabSpeed = ((labTypeValue*(1 + techResearchSpeedValue) * qualityOfLabsValue) * (1 + parseFloat(beaconSpeedValue) + parseFloat(totalSpeedPenalty))).toFixed(2);
+
+// Calculates the total lab productivity from all sources
+	totalLabProductivity = (parseFloat((techLevelResearchProductivityValue * 0.1).toFixed(2)) + parseFloat((numberOfProductivityModulesValue * Math.floor(100*tierOfProductivityModulesValue * qualityOfProductivityModulesValue)).toFixed(2)/100)).toFixed(2);
+
+document.getElementById("researchSpeed").innerHTML = "Lab speed: " + totalLabSpeed;
+document.getElementById("researchProductivity").innerHTML = "(1 + Lab productivity: " + totalLabProductivity + " == " + (totalLabProductivity*100).toFixed(0) + "%)";
+
+calculateLabsNeeded();
+}
+
+function calculateLabsNeeded()
+//Calculates the number of labs needed
+{
+// Variables for the determination of the labs needed
+let researchCycleSecondsValue = parseInt(document.getElementById("researchCycleSeconds").value);
+	researchCycleSecondsValue = researchCycleSecondsValue || 60;
+let packsPerMinuteValue = parseInt(document.getElementById("packsPerMinute").value);
+	packsPerMinuteValue = packsPerMinuteValue || 60;
+let secondsValue = parseInt(document.getElementById("seconds").value);
+	secondsValue = secondsValue || 60;
+let labsNeededValue;
+	labsNeededValue = ((packsPerMinuteValue / secondsValue) * (researchCycleSecondsValue / (parseFloat(totalLabSpeed) * (1 + parseFloat(totalLabProductivity))))).toFixed(2);
+
+document.getElementById("labsNeeded").innerHTML = "Labs needed: " +labsNeededValue;
+
+}
+</script>
+
+<script>//Functions for setting and changing values and images throughout the form based on preset values.
+//
+
+function formReset()
+//Resets the form to its default values.
+{
+	//Fields
+	document.getElementById("labType").value = "1";
+	document.getElementById("qualityOfLabs"). value = "1";
+	//Images
+	document.getElementById("labTypeImage").setAttribute("src", imagesRoot + "research-speed.png");
+	document.getElementById("qualityOfLabsImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	
+	//Fields
+	document.getElementById("techLevelResearchSpeed").value = "0";
+	document.getElementById("techLevelResearchProductivity").value = "0";
+	
+	//Fields
+	document.getElementById("numberOfProductivityModules").value = "0";
+	document.getElementById("tierOfProductivityModules").value = "0";
+	document.getElementById("qualityOfProductivityModules").value = "1";
+	
+	//Images
+	document.getElementById("qualityOfProductivityModulesImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	document.getElementById("productivityModuleImage").setAttribute("src", imagesRoot + "empty-module-slot.png");
+	document.getElementById("productivityModuleImage2").setAttribute("hidden", "");
+	document.getElementById("productivityModuleImage3").setAttribute("hidden", "");
+	document.getElementById("productivityModuleImage4").setAttribute("hidden", "");
+	
+	//Fields
+	document.getElementById("numberOfBeacons").value = "0";
+	document.getElementById("qualityOfBeacons").value = "1.5";
+	
+	//Images
+	document.getElementById("qualityOfBeaconsImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	
+	//Fields
+	document.getElementById("numberOfSpeedModules").value = "0";
+	document.getElementById("tierOfSpeedModules").value = "0";
+	document.getElementById("qualityOfSpeedModules").value = "1";
+	
+	//Images
+	document.getElementById("qualityOfSpeedModulesImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	document.getElementById("speedModuleImage").setAttribute("src", imagesRoot + "empty-module-slot.png");
+	document.getElementById("speedModuleImage2").setAttribute("hidden", "");
+	
+	document.getElementById("images").setAttribute("src", imagesRoot + "Lab_Beacons_00.png");
+	
+	//
+	researchSpeedValue();
+	
+};
+
+function formVanillaLab()
+//Sets the values and the images for labs according to maximum attainable vanilla Factorio settings.
+{
+	//Fields
+	document.getElementById("labType").value = "1";
+	document.getElementById("qualityOfLabs"). value = "1";
+	//Images
+	document.getElementById("labTypeImage").setAttribute("src", imagesRoot + "research-speed.png");
+	document.getElementById("qualityOfLabsImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	
+	//Fields
+	document.getElementById("techLevelResearchSpeed").value = "2.5";
+	document.getElementById("techLevelResearchProductivity").value = "0";
+	
+	//Fields
+	document.getElementById("numberOfProductivityModules").value = "2";
+	document.getElementById("tierOfProductivityModules").value = "0.1";
+	document.getElementById("qualityOfProductivityModules").value = "1";
+	
+	//Images
+	document.getElementById("qualityOfProductivityModulesImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	document.getElementById("productivityModuleImage").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage2").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage2").removeAttribute("hidden");
+	document.getElementById("productivityModuleImage3").setAttribute("hidden", "");
+	document.getElementById("productivityModuleImage4").setAttribute("hidden", "");
+	
+	//Fields
+	document.getElementById("numberOfBeacons").value = "12";
+	document.getElementById("qualityOfBeacons").value = "1.5";
+	
+	//Images
+	document.getElementById("qualityOfBeaconsImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	
+	//Fields
+	document.getElementById("numberOfSpeedModules").value = "2";
+	document.getElementById("tierOfSpeedModules").value = "0.5";
+	document.getElementById("qualityOfSpeedModules").value = "1";
+	
+	//Images
+	document.getElementById("qualityOfSpeedModulesImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	document.getElementById("speedModuleImage").setAttribute("src", imagesRoot + "speed-module-3.png");
+	document.getElementById("speedModuleImage2").setAttribute("src", imagesRoot + "speed-module-3.png");
+	document.getElementById("speedModuleImage2").removeAttribute("hidden");
+	
+	document.getElementById("images").setAttribute("src", imagesRoot + "Lab_Beacons_12.png");
+	
+	//
+	researchSpeedValue();
+};
+
+function formVanillaLabQuality()
+//Sets the values and the images for labs according to maximum attainable Factorio Space Age settings.
+{
+	//Fields
+	document.getElementById("labType").value = "1";
+	document.getElementById("qualityOfLabs"). value = "2.5";
+	//Images
+	document.getElementById("labTypeImage").setAttribute("src", imagesRoot + "research-speed.png");
+	document.getElementById("qualityOfLabsImage").setAttribute("src", imagesRoot + "quality-legendary.png");
+	
+	//Fields
+	document.getElementById("techLevelResearchSpeed").value = "2.5";
+	document.getElementById("techLevelResearchProductivity").value = "0";
+	
+	//Fields
+	document.getElementById("numberOfProductivityModules").value = "2";
+	document.getElementById("tierOfProductivityModules").value = "0.1";
+	document.getElementById("qualityOfProductivityModules").value = "2.5";
+	
+	//Images
+	document.getElementById("qualityOfProductivityModulesImage").setAttribute("src", imagesRoot + "quality-legendary.png");
+	document.getElementById("productivityModuleImage").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage2").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage2").removeAttribute("hidden");
+	document.getElementById("productivityModuleImage3").setAttribute("hidden", "");
+	document.getElementById("productivityModuleImage4").setAttribute("hidden", "");
+	
+	//Fields
+	document.getElementById("numberOfBeacons").value = "12";
+	document.getElementById("qualityOfBeacons").value = "2.5";
+	
+	//Images
+	document.getElementById("qualityOfBeaconsImage").setAttribute("src", imagesRoot + "quality-legendary.png");
+	
+	//Fields
+	document.getElementById("numberOfSpeedModules").value = "2";
+	document.getElementById("tierOfSpeedModules").value = "0.5";
+	document.getElementById("qualityOfSpeedModules").value = "2.5";
+	
+	//Images
+	document.getElementById("qualityOfSpeedModulesImage").setAttribute("src", imagesRoot + "quality-legendary.png");
+	document.getElementById("speedModuleImage").setAttribute("src", imagesRoot + "speed-module-3.png");
+	document.getElementById("speedModuleImage2").setAttribute("src", imagesRoot + "speed-module-3.png");
+	document.getElementById("speedModuleImage2").removeAttribute("hidden");
+	
+	document.getElementById("images").setAttribute("src", imagesRoot + "Lab_Beacons_12.png");
+	
+	//
+	researchSpeedValue();
+};
+
+function formSpaceAgeBiolab()
+//Sets the values and the images for biolabs according to maximum attainable vanilla Factorio settings.
+{
+	//Fields
+	document.getElementById("labType").value = "2";
+	document.getElementById("qualityOfLabs"). value = "1";
+	//Images
+	document.getElementById("labTypeImage").setAttribute("src", imagesRoot + "biolab.png");
+	document.getElementById("qualityOfLabsImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	
+	//Fields
+	document.getElementById("techLevelResearchSpeed").value = "2.5";
+	document.getElementById("techLevelResearchProductivity").value = "0";
+	
+	//Fields
+	document.getElementById("numberOfProductivityModules").value = "4";
+	document.getElementById("tierOfProductivityModules").value = "0.1";
+	document.getElementById("qualityOfProductivityModules").value = "1";
+	
+	//Images
+	document.getElementById("qualityOfProductivityModulesImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	document.getElementById("productivityModuleImage").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage2").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage2").removeAttribute("hidden");
+	document.getElementById("productivityModuleImage3").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage3").removeAttribute("hidden");
+	document.getElementById("productivityModuleImage4").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage4").removeAttribute("hidden");
+	
+	//Fields
+	document.getElementById("numberOfBeacons").value = "16";
+	document.getElementById("qualityOfBeacons").value = "1.5";
+	
+	//Images
+	document.getElementById("qualityOfBeaconsImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	
+	//Fields
+	document.getElementById("numberOfSpeedModules").value = "2";
+	document.getElementById("tierOfSpeedModules").value = "0.5";
+	document.getElementById("qualityOfSpeedModules").value = "1";
+	
+	//Images
+	document.getElementById("qualityOfSpeedModulesImage").setAttribute("src", imagesRoot + "quality-normal.png");
+	document.getElementById("speedModuleImage").setAttribute("src", imagesRoot + "speed-module-3.png");
+	document.getElementById("speedModuleImage2").setAttribute("src", imagesRoot + "speed-module-3.png");
+	document.getElementById("speedModuleImage2").removeAttribute("hidden");
+	
+	document.getElementById("images").setAttribute("src", imagesRoot + "Biolab_Beacons_16.png");
+	
+	//
+	researchSpeedValue();
+};
+
+function formSpaceAgeBiolabQuality()
+//Sets the values and the images for biolabs according to maximum attainable Factorio Space Age settings.
+{
+	//Fields
+	document.getElementById("labType").value = "2";
+	document.getElementById("qualityOfLabs"). value = "2.5";
+	//Images
+	document.getElementById("labTypeImage").setAttribute("src", imagesRoot + "biolab.png");
+	document.getElementById("qualityOfLabsImage").setAttribute("src", imagesRoot + "quality-legendary.png");
+	
+	//Fields
+	document.getElementById("techLevelResearchSpeed").value = "2.5";
+	document.getElementById("techLevelResearchProductivity").value = "0";
+	
+	//Fields
+	document.getElementById("numberOfProductivityModules").value = "4";
+	document.getElementById("tierOfProductivityModules").value = "0.1";
+	document.getElementById("qualityOfProductivityModules").value = "2.5";
+	
+	//Images
+	document.getElementById("qualityOfProductivityModulesImage").setAttribute("src", imagesRoot + "quality-legendary.png");
+	document.getElementById("productivityModuleImage").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage2").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage2").removeAttribute("hidden");
+	document.getElementById("productivityModuleImage3").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage3").removeAttribute("hidden");
+	document.getElementById("productivityModuleImage4").setAttribute("src", imagesRoot + "productivity-module-3.png");
+	document.getElementById("productivityModuleImage4").removeAttribute("hidden");
+	
+	//Fields
+	document.getElementById("numberOfBeacons").value = "16";
+	document.getElementById("qualityOfBeacons").value = "2.5";
+	
+	//Images
+	document.getElementById("qualityOfBeaconsImage").setAttribute("src", imagesRoot + "quality-legendary.png");
+	
+	//Fields
+	document.getElementById("numberOfSpeedModules").value = "2";
+	document.getElementById("tierOfSpeedModules").value = "0.5";
+	document.getElementById("qualityOfSpeedModules").value = "2.5";
+	
+	//Images
+	document.getElementById("qualityOfSpeedModulesImage").setAttribute("src", imagesRoot + "quality-legendary.png");
+	document.getElementById("speedModuleImage").setAttribute("src", imagesRoot + "speed-module-3.png");
+	document.getElementById("speedModuleImage2").setAttribute("src", imagesRoot + "speed-module-3.png");
+	document.getElementById("speedModuleImage2").removeAttribute("hidden");
+	
+	document.getElementById("images").setAttribute("src", imagesRoot + "Biolab_Beacons_16.png");
+	
+	//
+	researchSpeedValue();
+};
+
+</script>
+
+</body>
+</html>
